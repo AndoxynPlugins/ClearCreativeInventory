@@ -18,9 +18,15 @@ package net.daboross.bukkitdev.clearinvcreative;
 
 import java.io.IOException;
 import java.util.logging.Level;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.MetricsLite;
@@ -52,10 +58,18 @@ public class ClearInvCreativePlugin extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (cmd.getName().equalsIgnoreCase("")) {
-        } else {
-            sender.sendMessage("ClearInvCreative doesn't know about the command /" + cmd.getName());
-        }
+        sender.sendMessage("ClearInvCreative doesn't know about the command /" + cmd.getName());
         return true;
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent evt) {
+        Player p = evt.getPlayer();
+        if (p.getGameMode() == GameMode.CREATIVE) {
+            getLogger().log(Level.INFO, "Clearing {0}''s inventory.", p.getName());
+            PlayerInventory i = p.getInventory();
+            i.clear();
+            i.setArmorContents(new ItemStack[4]);
+        }
     }
 }
